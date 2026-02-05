@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from app.schemas import VoiceDetectionRequest, VoiceDetectionResponse
 from app.security.api_key import verify_api_key
 from app.services.audio_utils import load_audio_from_base64
@@ -6,6 +7,25 @@ from app.services.feature_extractor import extract_features
 from app.services.inference import classify_voice
 
 app = FastAPI(title="AI Voice Detection API")
+
+# CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/")
+def home():
+    return {"status": "ok", "message": "AI Voice Detection API is running"}
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 
 @app.post("/api/voice-detection", response_model=VoiceDetectionResponse)
